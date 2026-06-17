@@ -61,6 +61,6 @@ void draw_texture(const Texture *texture, const Transform *transform);
 void init_renderer();
 
 void mat4_mult(const GLfloat b[4][4], const GLfloat a[4][4], GLfloat out[4][4]);
-void generate_rotation_matrices(GLfloat pitch_matrix[4][4], float pitch, GLfloat yaw_matrix[4][4], float yaw);
+void generate_rotation_matrices(GLfloat pitch_matrix[4][4], float pitch, GLfloat yaw_matrix[4][4], float yaw, GLfloat roll_matrix[4][4], float roll);
 
 #endif

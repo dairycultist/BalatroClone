@@ -63,15 +63,17 @@ void draw_texture(const Texture *texture, const Transform *transform) {
 	// rotate
 	GLfloat pitch_matrix[4][4];
 	GLfloat yaw_matrix[4][4];
-	// GLfloat roll_matrix[4][4];
+	GLfloat roll_matrix[4][4];
 
 	generate_rotation_matrices(
 		pitch_matrix, transform->a_x,
-		yaw_matrix, transform->a_y
+		yaw_matrix, transform->a_y,
+		roll_matrix, transform->a_z
 	);
 
 	mat4_mult(pitch_matrix, model_matrix, model_matrix);
-	mat4_mult(yaw_matrix, model_matrix, model_matrix);
+	mat4_mult(yaw_matrix,   model_matrix, model_matrix);
+	mat4_mult(roll_matrix,  model_matrix, model_matrix);
 
 	// translate
 	model_matrix[3][0] += transform->x;
@@ -81,10 +83,10 @@ void draw_texture(const Texture *texture, const Transform *transform) {
 	// perspective projection (hardcoded)
 	// https://www.songho.ca/opengl/gl_projectionmatrix.html#fov
 	static GLfloat proj_matrix[4][4] = {
-		{1.0 / ASPECT, 0, 0, 0},
-		{0, 1.0, 0, 0},
-		{0, 0, -1, -1},
-		{0, 0, -0.2, 0},
+		{ 1.0 / ASPECT,   0,    0,    0 },
+		{            0, 1.0,    0,    0 },
+		{            0,   0, -1.0, -1.0 },
+		{            0,   0, -0.2,    0 },
 	};
 	mat4_mult(proj_matrix, model_matrix, model_matrix);
 
