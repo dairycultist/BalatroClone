@@ -5,6 +5,38 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
 
+// free aspect ratio is outside of scope (involves updating UI meshes and their positions, no thanks)
+#define ASPECT 1.666
+
+#define VERTEX_SHADERCODE "#version 150 core\n"\
+	"uniform mat4 position_matrix;"\
+	"in vec2 position;"\
+	"in vec2 UV;"\
+	"out vec2 frag_UV;"\
+	"void main() {"\
+		"gl_Position = position_matrix * vec4(position.xy, 0.0, 1.0);"\
+		"frag_UV = UV;"\
+	"}"
+
+#define FRAGMENT_SHADERCODE "#version 150 core\n"\
+	"uniform sampler2D tex;"\
+	"in vec2 frag_UV;"\
+	"out vec4 outColor;"\
+	"void main() {"\
+		"outColor = texture(tex, frag_UV);"\
+	"}"
+
+// hardcoded unit square (every sprite is drawn with the same mesh but transformed)
+#define SPRITE_MESH_DATA (float[]) { \
+	 1,  1, 1, 1,\
+	-1, -1, 0, 0,\
+	-1,  1, 0, 1,\
+	 1,  1, 1, 1,\
+	 1, -1, 1, 0,\
+	-1, -1, 0, 0\
+}
+#define SPRITE_MESH_VERTEX_COUNT 6
+
 typedef struct {
 
 	float x;

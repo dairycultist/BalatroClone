@@ -4,9 +4,6 @@ typedef char bool;
 #define TRUE 1
 #define FALSE 0
 
-// free aspect ratio is outside of scope (involves updating UI meshes and their positions, no thanks)
-#define ASPECT 1.666
-
 int main() {
 
 	printf("Starting game\n");
@@ -39,7 +36,7 @@ int main() {
 	glFrontFace(GL_CCW);
 	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 
-	Transform test_transform = { 0, 0 };
+	Transform test_transform = { 0, 0, 1, 1, 0, 0, 0 };
 	Texture test_texture;
 	load_texture("./test_sprite.png", &test_texture);
 
