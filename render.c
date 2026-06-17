@@ -54,10 +54,10 @@ void draw_texture(const Texture *texture, const Transform *transform) {
 
 	// scale in world
 	GLfloat model_matrix[4][4] = {
-		{ 0.005 * transform->s_x,                      0, 0, 0 },
-		{                      0, 0.005 * transform->s_y, 0, 0 },
-		{                      0,                      0, 1, 0 },
-		{                      0,                      0, 0, 1 }
+		{  transform->s_x * texture->w / 128.0,                                    0, 0, 0 },
+		{                                    0,  transform->s_y * texture->h / 128.0, 0, 0 },
+		{                                    0,                                    0, 1, 0 },
+		{                                    0,                                    0, 0, 1 }
 	};
 
 	// rotate
@@ -73,13 +73,20 @@ void draw_texture(const Texture *texture, const Transform *transform) {
 	mat4_mult(pitch_matrix, model_matrix, model_matrix);
 	mat4_mult(yaw_matrix, model_matrix, model_matrix);
 
-	// scale to window
-	model_matrix[0][0] *= texture->w / ASPECT;
-	model_matrix[1][1] *= texture->h;
-
 	// translate
 	model_matrix[3][0] += transform->x;
 	model_matrix[3][1] += transform->y;
+	model_matrix[3][2] -= 5.0;
+
+	// perspective projection (hardcoded)
+	// https://www.songho.ca/opengl/gl_projectionmatrix.html#fov
+	static GLfloat proj_matrix[4][4] = {
+		{1.0 / ASPECT, 0, 0, 0},
+		{0, 1.0, 0, 0},
+		{0, 0, -1, -1},
+		{0, 0, -0.2, 0},
+	};
+	mat4_mult(proj_matrix, model_matrix, model_matrix);
 
 	// bind the mesh and its texture
 	glBindVertexArray(sprite_vao);

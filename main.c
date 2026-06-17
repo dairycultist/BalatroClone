@@ -122,7 +122,8 @@ int main() {
 		// process/draw
 		draw_texture(&test_texture, &test_transform);
 		test_transform.a_x += 0.01;
-		test_transform.a_y += 0.023;
+		// test_transform.a_y += 0.023;
+		// test_transform.a_z += 0.017;
 
 		SDL_GL_SwapWindow(window);
 		SDL_Delay(1000 / 60);
