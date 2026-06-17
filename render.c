@@ -52,46 +52,41 @@ void load_texture(const char *path, Texture *const out) {
 
 void draw_texture(const Texture *texture, const Transform *transform) {
 
-	GLfloat position_matrix[4][4] = { // TODO rename to model matrix once we care
-		{ transform->s_x / ASPECT,              0, 0, 0 },
-		{                       0, transform->s_y, 0, 0 },
-		{                       0,              0, 1, 0 },
-		{                       0,              0, 0, 1 }
+	// scale in world
+	GLfloat model_matrix[4][4] = {
+		{ 0.005 * transform->s_x,                      0, 0, 0 },
+		{                      0, 0.005 * transform->s_y, 0, 0 },
+		{                      0,                      0, 1, 0 },
+		{                      0,                      0, 0, 1 }
 	};
 
-	// scale
+	// rotate
+	GLfloat pitch_matrix[4][4];
+	GLfloat yaw_matrix[4][4];
+	// GLfloat roll_matrix[4][4];
 
-	// TODO rotate
-	// GLfloat pitch_matrix[4][4];
-	// GLfloat yaw_matrix[4][4];
+	generate_rotation_matrices(
+		pitch_matrix, transform->a_x,
+		yaw_matrix, transform->a_y
+	);
 
-	// // model matrix (converts from model space to world space)
-	// generate_rotation_matrices(
-	// 	pitch_matrix, transform->pitch,
-	// 	yaw_matrix, transform->yaw
-	// );
+	mat4_mult(pitch_matrix, model_matrix, model_matrix);
+	mat4_mult(yaw_matrix, model_matrix, model_matrix);
 
-	// GLfloat model_matrix[4][4];
-
-	// mat4_mult(yaw_matrix, pitch_matrix, model_matrix); // rotation
-
-	// model_matrix[3][0] = transform->x; // translation
-	// model_matrix[3][1] = transform->y;
-	// model_matrix[3][2] = transform->z;
-
-	// // final position matrix (proj_matrix * view_matrix * model_matrix)
-	// mat4_mult(proj_matrix, model_matrix, position_matrix);
+	// scale to window
+	model_matrix[0][0] *= texture->w / ASPECT;
+	model_matrix[1][1] *= texture->h;
 
 	// translate
-	position_matrix[3][0] += transform->x;
-	position_matrix[3][1] += transform->y;
+	model_matrix[3][0] += transform->x;
+	model_matrix[3][1] += transform->y;
 
 	// bind the mesh and its texture
 	glBindVertexArray(sprite_vao);
 	glBindTexture(GL_TEXTURE_2D, texture->texture);
 
 	// load the uniform we just calculated
-	glUniformMatrix4fv(glGetUniformLocation(sprite_shader, "position_matrix"), 1, GL_FALSE, &position_matrix[0][0]);
+	glUniformMatrix4fv(glGetUniformLocation(sprite_shader, "model_matrix"), 1, GL_FALSE, &model_matrix[0][0]);
 
 	// draw
 	glDrawArrays(GL_TRIANGLES, 0, SPRITE_MESH_VERTEX_COUNT);

@@ -9,12 +9,12 @@
 #define ASPECT 1.666
 
 #define VERTEX_SHADERCODE "#version 150 core\n"\
-	"uniform mat4 position_matrix;"\
+	"uniform mat4 model_matrix;"\
 	"in vec2 position;"\
 	"in vec2 UV;"\
 	"out vec2 frag_UV;"\
 	"void main() {"\
-		"gl_Position = position_matrix * vec4(position.xy, 0.0, 1.0);"\
+		"gl_Position = model_matrix * vec4(position.xy, 0.0, 1.0);"\
 		"frag_UV = UV;"\
 	"}"
 
