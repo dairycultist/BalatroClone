@@ -1,4 +1,5 @@
 #include "render.h"
+#include "error.h"
 
 typedef char bool;
 #define TRUE 1
@@ -8,10 +9,11 @@ int main() {
 
 	printf("Starting game\n");
 
-	if (SDL_Init(SDL_INIT_VIDEO) != 0) {
-		fprintf(stderr, "Could not initialize SDL: %s\n", SDL_GetError());
-		return 1;
-	}
+	if (SDL_Init(SDL_INIT_VIDEO) != 0)
+		THROW("Could not initialize SDL\n%s\n", SDL_GetError());
+
+	if (TTF_Init() != 0)
+		THROW("Could not initialize SDL TTF\n%s\n", TTF_GetError());
 
 	// init OpenGL
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
@@ -22,10 +24,8 @@ int main() {
 	// create the window
 	SDL_Window *window = SDL_CreateWindow("Game", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 400, 240, SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE);
 
-	if (!window) {
-		fprintf(stderr, "Could not create window: %s\n", SDL_GetError());
-		return 1;
-    }
+	if (!window)
+		THROW("Could not create window\n%s\n", SDL_GetError());
 
 	SDL_GLContext context = SDL_GL_CreateContext(window);
 
@@ -35,22 +35,25 @@ int main() {
 	init_renderer();
 	glFrontFace(GL_CCW);
 	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
+	// test initialization
 	Transform test_transform = { 0, 0, 1, 1, 0, 0, 0 };
-	Texture test_texture;
+	Texture test_texture, test_text;
+
 	load_texture("./test_sprite.png", &test_texture);
+
+	TTF_Font *font = TTF_OpenFont("./font/CreatoDisplay-Regular.otf", 28); // void TTF_CloseFont(TTF_Font *font);
+
+	if (!font)
+		THROW("Could not open font \"%s\"\n%s\n", "./font/CreatoDisplay-Regular.otf", TTF_GetError());
+
+	create_texture_from_string(font, "Hello", 255, 255, 255, 255, 0, &test_text);
 
 	// process events until window is closed
 	SDL_Event event;
 	bool running = TRUE;
-	bool use_original_res = TRUE;
-
-	bool up       = FALSE;
-	bool down     = FALSE;
-	bool left     = FALSE;
-	bool right    = FALSE;
-	bool action_1 = FALSE;
-	bool action_2 = FALSE;
 
 	int window_w = 400, window_h = 240, window_x = 0, window_y = 0;
 
@@ -82,45 +85,14 @@ int main() {
 				}
 
 				glViewport(window_x, window_y, window_w, window_h);
-
-			} else if (event.type == SDL_KEYDOWN && event.key.repeat == 0) {
-
-				if (event.key.keysym.scancode == SDL_SCANCODE_LEFT) {
-					left = TRUE;
-				} else if (event.key.keysym.scancode == SDL_SCANCODE_RIGHT) {
-					right = TRUE;
-				} else if (event.key.keysym.scancode == SDL_SCANCODE_UP) {
-					up = TRUE;
-				} else if (event.key.keysym.scancode == SDL_SCANCODE_DOWN) {
-					down = TRUE;
-				} else if (event.key.keysym.scancode == SDL_SCANCODE_Z) {
-					action_1 = TRUE;
-				} else if (event.key.keysym.scancode == SDL_SCANCODE_X) {
-					action_2 = TRUE;
-				} else if (event.key.keysym.scancode == SDL_SCANCODE_O) {
-					use_original_res = !use_original_res;
-				}
-
-			} else if (event.type == SDL_KEYUP) {
-
-				if (event.key.keysym.scancode == SDL_SCANCODE_LEFT) {
-					left = FALSE;
-				} else if (event.key.keysym.scancode == SDL_SCANCODE_RIGHT) {
-					right = FALSE;
-				} else if (event.key.keysym.scancode == SDL_SCANCODE_UP) {
-					up = FALSE;
-				} else if (event.key.keysym.scancode == SDL_SCANCODE_DOWN) {
-					down = FALSE;
-				} else if (event.key.keysym.scancode == SDL_SCANCODE_Z) {
-					action_1 = FALSE;
-				} else if (event.key.keysym.scancode == SDL_SCANCODE_X) {
-					action_2 = FALSE;
-				}
 			}
 		}
 
 		// process/draw
 		draw_texture(&test_texture, &test_transform);
+		test_transform.y += 2.0;
+		draw_texture(&test_text, &test_transform);
+		test_transform.y -= 2.0;
 		test_transform.a_x += 0.01;
 		test_transform.a_y += 0.023;
 		test_transform.a_z += 0.017;

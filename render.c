@@ -1,31 +1,10 @@
 #include "render.h"
+#include "error.h"
 
 static GLuint sprite_shader;
 static GLuint sprite_vao; // vertex array
 
-void load_texture(const char *path, Texture *const out) {
-
-	SDL_Surface *surface = IMG_Load(path);
-
-	// flip surface vertically to match OpenGL spec
-	unsigned char *pixels = (unsigned char *) surface->pixels;
-	int pixel_bytes = surface->format->BytesPerPixel;
-
-	for (int y = 0; y < surface->h / 2; y++) {
-
-		for (int x = 0; x < surface->w; x++) {
-
-			int top = x + y * surface->h;
-			int bottom = x + (surface->w * surface->h - (y + 1) * surface->h);
-
-			for (int i=0; i<pixel_bytes; i++) {
-
-				unsigned char hold = pixels[top * pixel_bytes + i];
-				pixels[top * pixel_bytes + i] = pixels[bottom * pixel_bytes + i];
-				pixels[bottom * pixel_bytes + i] = hold;
-			}
-		}
-	}
+static void create_texture_from_surface(SDL_Surface *surface, Texture *const out) {
 
 	// create texture object
 	GLuint texture;
@@ -43,11 +22,47 @@ void load_texture(const char *path, Texture *const out) {
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
 	// write texture data to GL_TEXTURE_2D buffer
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, surface->w, surface->h, 0, GL_RGBA, GL_UNSIGNED_BYTE, surface->pixels);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, surface->w, surface->h, 0, GL_RGBA, GL_UNSIGNED_BYTE, surface->pixels);
 
 	out->texture = texture;
 	out->w = surface->w;
 	out->h = surface->h;
+}
+
+void load_texture(const char *path, Texture *const out) {
+
+	SDL_Surface *surface = IMG_Load(path);
+
+	if (!surface)
+		THROW("Could not load \"%s\"\n%s\n", path, SDL_GetError());
+
+	create_texture_from_surface(surface, out);
+	SDL_FreeSurface(surface);
+}
+
+void create_texture_from_string(TTF_Font *font, const char *text, Uint8 r, Uint8 g, Uint8 b, Uint8 a, Uint32 wrapLength, Texture *const out) {
+
+	if (!font)
+		THROW("Font cannot be null\n");
+
+	if (!text)
+		THROW("Text cannot be null\n");
+
+	SDL_Surface *surface = TTF_RenderUTF8_Blended_Wrapped(font, text, (SDL_Color) { r, g, b, a }, wrapLength);
+
+	if (!surface)
+		THROW("Error with TTF_RenderUTF8_Blended_Wrapped\n%s\n", TTF_GetError());
+
+	// fonts aren't loaded in the format we use, so we have to convert it
+	SDL_Surface *new_surface = SDL_ConvertSurface(surface, &((SDL_PixelFormat) { 376840196, NULL, 32, 4, {0, 0}, 0xFF, 0xFF00, 0xFF0000, 0xFF000000 }), 8);
+
+	if (!new_surface)
+		THROW("Error with SDL_ConvertSurface\n%s\n", SDL_GetError());
+	
+	create_texture_from_surface(new_surface, out);
+
+	SDL_FreeSurface(surface);
+	SDL_FreeSurface(new_surface);
 }
 
 void draw_texture(const Texture *texture, const Transform *transform) {
@@ -99,6 +114,14 @@ void draw_texture(const Texture *texture, const Transform *transform) {
 
 	// draw
 	glDrawArrays(GL_TRIANGLES, 0, SPRITE_MESH_VERTEX_COUNT);
+}
+
+void destroy_texture(Texture *texture) {
+
+	glDeleteTextures(1, &texture->texture);
+	texture->texture = 0;
+	texture->w = 0;
+	texture->h = 0;
 }
 
 static inline GLuint load_shader(const char *shadercode, const GLenum shader_type) {

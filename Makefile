@@ -9,7 +9,7 @@ else
 endif
 
 client.out: *.c
-	@gcc -o client.out *.c $(GCCFLAGS) $(shell pkg-config --cflags --libs sdl2 SDL2_image)
+	@gcc -o client.out *.c $(GCCFLAGS) $(shell pkg-config --cflags --libs sdl2 SDL2_image SDL2_ttf)
 
 run: client.out
 	@./client.out

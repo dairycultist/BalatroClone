@@ -4,6 +4,7 @@
 #include <GL/glew.h>
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
+#include <SDL2/SDL_ttf.h>
 
 // free aspect ratio is outside of scope (involves updating UI meshes and their positions, no thanks)
 #define ASPECT 1.666
@@ -28,12 +29,12 @@
 
 // hardcoded unit square (every sprite is drawn with the same mesh but transformed)
 #define SPRITE_MESH_DATA (float[]) { \
-	 1,  1, 1, 1,\
-	-1, -1, 0, 0,\
-	-1,  1, 0, 1,\
-	 1,  1, 1, 1,\
-	 1, -1, 1, 0,\
-	-1, -1, 0, 0\
+	 1,  1, 1, 0,\
+	-1, -1, 0, 1,\
+	-1,  1, 0, 0,\
+	 1,  1, 1, 0,\
+	 1, -1, 1, 1,\
+	-1, -1, 0, 1\
 }
 #define SPRITE_MESH_VERTEX_COUNT 6
 
@@ -57,7 +58,10 @@ typedef struct {
 } Texture;
 
 void load_texture(const char *path, Texture *const out);
+void create_texture_from_string(TTF_Font *font, const char *text, Uint8 r, Uint8 g, Uint8 b, Uint8 a, Uint32 wrapLength, Texture *const out);
 void draw_texture(const Texture *texture, const Transform *transform);
+void destroy_texture(Texture *texture);
+
 void init_renderer();
 
 void mat4_mult(const GLfloat b[4][4], const GLfloat a[4][4], GLfloat out[4][4]);
