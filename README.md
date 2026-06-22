@@ -1,9 +1,22 @@
+balatro clone in C since balatro and C are awesome plus I can add fat women
 
-you really only like balatro so just duck around making your own clone in C lol im not spending 15 bucks on that plus I can add fat women
+deckbuilder roguelike (linear map with combat points and shop points)
 
-probably a balatro clone but like, with an avatar system like puyo puyo tetris lol
-and then the small project turns into a somewhat big project
-KISS... KISS...
+maybe a playable character system (start with different decks, see hot lady on side of screen) but that's for later
+
+during combat you have a hand of three cards which you get three discards for per attack.
+you can play up to three cards but they must be the same element, and the cards can have
+different effects like:
+- deal 1 damage
+- heal 1 health
+- deal 1 damage to self (debuff card)
+- deal 3 damage if played with two other cards
+
+Enemies can be weak to (double) or resistant to (half rounded-down) damage from certain elements
+(enemies don't have an element themselves). There's no element-beats-element loop; an enemy can
+technically be weak or resistant to every element. You start with three different elements composing
+your deck, but shops let you unlock one or two special ones that you want to add a few of to your
+deck if you want to be strong against late-game enemies.
 
 ```
 sudo apt update

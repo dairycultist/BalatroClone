@@ -85,7 +85,8 @@ int main() {
 				}
 
 				glViewport(window_x, window_y, window_w, window_h);
-			}
+
+			} // TODO mousemove
 		}
 
 		// process/draw

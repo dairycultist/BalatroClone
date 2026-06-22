@@ -28,6 +28,8 @@
 	"}"
 
 // hardcoded unit square (every sprite is drawn with the same mesh but transformed)
+// technically the UVs are flipped vertically because the SDL_Surface spec is different
+// from the OpenGL spec and I don't feel like bothering converting from one to another
 #define SPRITE_MESH_DATA (float[]) { \
 	 1,  1, 1, 0,\
 	-1, -1, 0, 1,\
@@ -61,6 +63,8 @@ void load_texture(const char *path, Texture *const out);
 void create_texture_from_string(TTF_Font *font, const char *text, Uint8 r, Uint8 g, Uint8 b, Uint8 a, Uint32 wrapLength, Texture *const out);
 void draw_texture(const Texture *texture, const Transform *transform);
 void destroy_texture(Texture *texture);
+
+// TODO void window_to_render_position(int screen_x, int screen_y, float *const out_x, float *const out_y);
 
 void init_renderer();
 
