@@ -8,11 +8,11 @@ else
 	$(error Unsupported OS: $(UNAME))
 endif
 
-client.out: *.c
-	@gcc -o client.out *.c $(GCCFLAGS) $(shell pkg-config --cflags --libs sdl2 SDL2_image SDL2_ttf)
+build.out: src/*.c
+	@gcc -o build.out $^ $(GCCFLAGS) $(shell pkg-config --cflags --libs sdl2 SDL2_image SDL2_ttf)
 
-run: client.out
-	@./client.out
+run: build.out
+	@./build.out
 
 clean:
-	rm client.out
+	rm build.out

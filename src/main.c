@@ -42,14 +42,14 @@ int main() {
 	Transform test_transform = { 0, 0, 1, 1, 0, 0, 0 };
 	Texture test_texture, test_text;
 
-	load_texture("./test_sprite.png", &test_texture);
+	load_texture("./res/test_sprite.png", &test_texture);
 
-	TTF_Font *font = TTF_OpenFont("./font/CreatoDisplay-Regular.otf", 28); // void TTF_CloseFont(TTF_Font *font);
+	TTF_Font *font = TTF_OpenFont("./res/font/CreatoDisplay-Regular.otf", 28); // void TTF_CloseFont(TTF_Font *font);
 
 	if (!font)
-		THROW("Could not open font \"%s\"\n%s\n", "./font/CreatoDisplay-Regular.otf", TTF_GetError());
+		THROW("Could not open font \"%s\"\n%s\n", "./res/font/CreatoDisplay-Regular.otf", TTF_GetError());
 
-	create_texture_from_string(font, "Hello", 255, 255, 255, 255, 0, &test_text);
+	create_texture_from_string(font, "Hello world!", 255, 255, 255, 255, 0, &test_text);
 
 	// process events until window is closed
 	SDL_Event event;
