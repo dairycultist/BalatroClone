@@ -45,7 +45,7 @@
 
 typedef struct {
 
-	float x;
+	float x; // TODO probably rename to u,v since it's positioned based on the viewport UV
 	float y;
     float s_x; // scale
     float s_y;

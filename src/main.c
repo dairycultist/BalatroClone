@@ -22,7 +22,9 @@ int main() {
 	SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE, 8);
 
 	// create the window
-	SDL_Window *window = SDL_CreateWindow("Game", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 400, 240, SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE);
+	int window_w = 400, window_h = window_w / ASPECT;
+
+	SDL_Window *window = SDL_CreateWindow("Game", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, window_w, window_h, SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE);
 
 	if (!window)
 		THROW("Could not create window\n%s\n", SDL_GetError());
@@ -38,7 +40,7 @@ int main() {
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 	// test initialization
-	Transform test_transform = { 0, 0, 1, 1, 0, 0, 0 };
+	Transform test_transform = { 0, 0, 10, 10, 0, 0, 0 };
 	Texture test_texture, test_text;
 
 	load_texture("./res/test_sprite.png", &test_texture);
@@ -54,7 +56,8 @@ int main() {
 	SDL_Event event;
 	bool running = TRUE;
 
-	int window_w = 400, window_h = 240, window_x = 0, window_y = 0;
+	int viewport_w = window_w, viewport_h = window_h, viewport_x = 0, viewport_y = 0;
+	float mouse_u = 0, mouse_v = 0;
 
 	while (running) {
 
@@ -66,36 +69,50 @@ int main() {
 
 			} else if (event.type == SDL_WINDOWEVENT && event.window.event == SDL_WINDOWEVENT_RESIZED) {
 
+				window_w = event.window.data1;
+				window_h = event.window.data2;
+
 				if (ASPECT > event.window.data1 / (float) event.window.data2) {
 
-					window_w = event.window.data1;
-					window_h = event.window.data1 / ASPECT;
+					viewport_w = event.window.data1;
+					viewport_h = event.window.data1 / ASPECT;
 
-					window_x = 0;
-					window_y = (event.window.data2 - window_h) / 2;
+					viewport_x = 0;
+					viewport_y = (event.window.data2 - viewport_h) / 2;
 
 				} else {
 
-					window_w = event.window.data2 * ASPECT;
-					window_h = event.window.data2;
+					viewport_w = event.window.data2 * ASPECT;
+					viewport_h = event.window.data2;
 
-					window_x = (event.window.data1 - window_w) / 2;
-					window_y = 0;
+					viewport_x = (event.window.data1 - viewport_w) / 2;
+					viewport_y = 0;
 				}
 
-				glViewport(window_x, window_y, window_w, window_h);
+				glViewport(viewport_x, viewport_y, viewport_w, viewport_h);
 
-			} // TODO mousemove
+			} else if (event.type == SDL_MOUSEMOTION) {
+
+				// transform mouse position to be relative to viewport
+				mouse_u = event.motion.x - viewport_x;
+				mouse_v = event.motion.y - viewport_y;
+
+				mouse_u = mouse_u * 2 - viewport_w;
+				mouse_v = mouse_v * 2 - viewport_h;
+
+				mouse_u /= viewport_w;
+				mouse_v /= viewport_h;
+
+				printf("%f \t%f\n", mouse_u, mouse_v);
+			}
 		}
 
 		// process/draw
 		draw_texture(&test_texture, &test_transform);
-		test_transform.y += 0.5;
-		draw_texture(&test_text, &test_transform);
-		test_transform.y -= 0.5;
-		test_transform.a_x += 0.01;
-		test_transform.a_y += 0.023;
-		test_transform.a_z += 0.017;
+
+		// test_transform.a_x += 0.01;
+		// test_transform.a_y += 0.023;
+		// test_transform.a_z += 0.017;
 
 		SDL_GL_SwapWindow(window);
 		SDL_Delay(1000 / 60);
