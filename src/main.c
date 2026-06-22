@@ -40,7 +40,7 @@ int main() {
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 	// test initialization
-	Transform test_transform = { 0, 0, 10, 10, 0, 0, 0 };
+	Transform test_transform = { 0, 0, 1, 1, 0, 0, 0 };
 	Texture test_texture, test_text;
 
 	load_texture("./res/test_sprite.png", &test_texture);
@@ -103,16 +103,21 @@ int main() {
 				mouse_u /= viewport_w;
 				mouse_v /= viewport_h;
 
+				mouse_v *= -1;
+
 				printf("%f \t%f\n", mouse_u, mouse_v);
 			}
 		}
 
 		// process/draw
-		draw_texture(&test_texture, &test_transform);
+		test_transform.x = mouse_u;
+		test_transform.y = mouse_v;
 
-		// test_transform.a_x += 0.01;
-		// test_transform.a_y += 0.023;
-		// test_transform.a_z += 0.017;
+		test_transform.a_x += 0.01;
+		test_transform.a_y += 0.023;
+		test_transform.a_z += 0.017;
+
+		draw_texture(&test_texture, &test_transform);
 
 		SDL_GL_SwapWindow(window);
 		SDL_Delay(1000 / 60);
