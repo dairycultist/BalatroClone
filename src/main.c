@@ -33,7 +33,6 @@ int main() {
 	glewInit();
 
 	init_renderer();
-	glFrontFace(GL_CCW);
 	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -91,9 +90,9 @@ int main() {
 
 		// process/draw
 		draw_texture(&test_texture, &test_transform);
-		test_transform.y += 2.0;
+		test_transform.y += 0.5;
 		draw_texture(&test_text, &test_transform);
-		test_transform.y -= 2.0;
+		test_transform.y -= 0.5;
 		test_transform.a_x += 0.01;
 		test_transform.a_y += 0.023;
 		test_transform.a_z += 0.017;

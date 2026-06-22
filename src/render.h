@@ -9,6 +9,9 @@
 // free aspect ratio is outside of scope (involves updating UI meshes and their positions, no thanks)
 #define ASPECT 1.666
 
+// how must perspective-ness should happen during sprite rotation
+#define DEPTH 0.5
+
 #define VERTEX_SHADERCODE "#version 150 core\n"\
 	"uniform mat4 model_matrix;"\
 	"in vec2 position;"\
