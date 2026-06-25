@@ -119,7 +119,7 @@ void draw_texture(const Texture *texture, const Transform *transform) {
 		{          1.0,            0,   0,    0 },
 		{            0,          1.0,   0,    0 },
 		{            0,            0, 1.0,    0 },
-		{ transform->x, transform->y,   0,  1.0 },
+		{ transform->u, transform->v,   0,  1.0 },
 	};
 	mat4_mult(trans_matrix, model_matrix, model_matrix);
 
@@ -145,6 +145,26 @@ void destroy_texture(Texture *texture) {
 void destroy_font(TTF_Font *font) {
 
 	TTF_CloseFont(font);
+}
+
+inline int aabb_contains_raw(float u, float v, float aabb_u, float aabb_v, float aabb_wd2, float aabb_hd2) {
+
+	return u > aabb_u - aabb_wd2
+		&& u < aabb_u + aabb_wd2
+		&& v > aabb_v - aabb_hd2
+		&& v < aabb_v + aabb_hd2;
+}
+
+inline int aabb_contains(float u, float v, Transform *transform, Texture *texture) {
+
+	return aabb_contains_raw(
+		u,
+		v,
+		transform->u,
+		transform->v,
+		transform->s_x * texture->w / 128.0 / 5.0 / ASPECT,
+		transform->s_y * texture->h / 128.0 / 5.0 // same 5.0 as the "translate back" value in draw_texture (hardcoded cuz I don't care)
+	);
 }
 
 static inline GLuint load_shader(const char *shadercode, const GLenum shader_type) {

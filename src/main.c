@@ -93,9 +93,7 @@ int main() {
 				mouse_u /= viewport_w;
 				mouse_v /= viewport_h;
 
-				mouse_v *= -1;
-
-				printf("%f \t%f\n", mouse_u, mouse_v);
+				mouse_v *= -1; // OpenGL positive V is up, but SDL positive window Y is down
 			}
 		}
 

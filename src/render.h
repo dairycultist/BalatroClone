@@ -45,8 +45,8 @@
 
 typedef struct {
 
-	float x; // TODO probably rename to u,v since it's positioned based on the viewport UV
-	float y;
+	float u; // center in window-uv space
+	float v;
     float s_x; // scale
     float s_y;
 	float a_x; // pitch
@@ -69,7 +69,8 @@ void draw_texture(const Texture *texture, const Transform *transform);
 void destroy_texture(Texture *texture);
 void destroy_font(TTF_Font *font);
 
-// TODO void window_to_render_position(int screen_x, int screen_y, float *const out_x, float *const out_y);
+int aabb_contains_raw(float u, float v, float aabb_u, float aabb_v, float aabb_wd2, float aabb_hd2); // aabb width/height divided by 2
+int aabb_contains(float u, float v, Transform *transform, Texture *texture); // doesn't take into account rotation, yes scale tho
 
 void init_renderer();
 

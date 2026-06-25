@@ -2,7 +2,8 @@
 #include "render.h"
 #include <math.h>
 
-static Transform test_transform = { 0, 0, 1, 1, 0, 0, 0 };
+static Transform card_transform_idle = { 0, 0, 1, 1, 0, 0, 0 };
+static Transform card_transform_hover = { 0, 0, 1, 1, 0, 0, 0 };
 static Texture card_water, card_fire, card_air, card_earth;
 static Texture test_text1, test_text2;
 
@@ -23,28 +24,36 @@ void logical_init() {
 
 void process(float mouse_u, float mouse_v) {
 
-    test_transform.a_y = sin(t) * 0.1;
-    test_transform.a_z = sin(t) * 0.025;
+    card_transform_idle.a_y = sin(t) * 0.2;
+    card_transform_idle.a_z = sin(t) * 0.05;
 
     t += 0.02;
 
-    test_transform.x = -0.5;
-    test_transform.y = 0.5;
-    draw_texture(&card_water, &test_transform);
-    draw_texture(&test_text1, &test_transform);
+    card_transform_idle.u = -0.5;
+    card_transform_idle.v = 0.5;
+    card_transform_hover.u = -0.5;
+    card_transform_hover.v = 0.5;
+    draw_texture(&card_water, aabb_contains(mouse_u, mouse_v, &card_transform_idle, &card_water) ? &card_transform_hover : &card_transform_idle);
+    draw_texture(&test_text1, aabb_contains(mouse_u, mouse_v, &card_transform_idle, &card_water) ? &card_transform_hover : &card_transform_idle);
 
-    test_transform.x = 0.5;
-    test_transform.y = 0.5;
-    draw_texture(&card_fire, &test_transform);
-    draw_texture(&test_text1, &test_transform);
+    card_transform_idle.u = 0.5;
+    card_transform_idle.v = 0.5;
+    card_transform_hover.u = 0.5;
+    card_transform_hover.v = 0.5;
+    draw_texture(&card_fire, aabb_contains(mouse_u, mouse_v, &card_transform_idle, &card_fire) ? &card_transform_hover : &card_transform_idle);
+    draw_texture(&test_text1, aabb_contains(mouse_u, mouse_v, &card_transform_idle, &card_fire) ? &card_transform_hover : &card_transform_idle);
 
-    test_transform.x = -0.5;
-    test_transform.y = -0.5;
-    draw_texture(&card_air, &test_transform);
-    draw_texture(&test_text2, &test_transform);
+    card_transform_idle.u = -0.5;
+    card_transform_idle.v = -0.5;
+    card_transform_hover.u = -0.5;
+    card_transform_hover.v = -0.5;
+    draw_texture(&card_air, aabb_contains(mouse_u, mouse_v, &card_transform_idle, &card_air) ? &card_transform_hover : &card_transform_idle);
+    draw_texture(&test_text2, aabb_contains(mouse_u, mouse_v, &card_transform_idle, &card_air) ? &card_transform_hover : &card_transform_idle);
 
-    test_transform.x = 0.5;
-    test_transform.y = -0.5;
-    draw_texture(&card_earth, &test_transform);
-    draw_texture(&test_text2, &test_transform);
+    card_transform_idle.u = 0.5;
+    card_transform_idle.v = -0.5;
+    card_transform_hover.u = 0.5;
+    card_transform_hover.v = -0.5;
+    draw_texture(&card_earth, aabb_contains(mouse_u, mouse_v, &card_transform_idle, &card_earth) ? &card_transform_hover : &card_transform_idle);
+    draw_texture(&test_text2, aabb_contains(mouse_u, mouse_v, &card_transform_idle, &card_earth) ? &card_transform_hover : &card_transform_idle);
 }
