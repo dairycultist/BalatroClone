@@ -1,3 +1,4 @@
+#include "process.h"
 #include "render.h"
 #include "error.h"
 
@@ -39,18 +40,7 @@ int main() {
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-	// test initialization
-	Transform test_transform = { 0, 0, 1, 1, 0, 0, 0 };
-	Texture test_texture, test_text;
-
-	load_texture("./res/test_sprite.png", &test_texture);
-
-	TTF_Font *font = TTF_OpenFont("./res/font/CreatoDisplay-Regular.otf", 28); // void TTF_CloseFont(TTF_Font *font);
-
-	if (!font)
-		THROW("Could not open font \"%s\"\n%s\n", "./res/font/CreatoDisplay-Regular.otf", TTF_GetError());
-
-	create_texture_from_string(font, "Hello world!", 255, 255, 255, 255, 0, &test_text);
+	logical_init();
 
 	// process events until window is closed
 	SDL_Event event;
@@ -109,15 +99,7 @@ int main() {
 			}
 		}
 
-		// process/draw
-		test_transform.x = mouse_u;
-		test_transform.y = mouse_v;
-
-		test_transform.a_x += 0.01;
-		test_transform.a_y += 0.023;
-		test_transform.a_z += 0.017;
-
-		draw_texture(&test_texture, &test_transform);
+		process(mouse_u, mouse_v);
 
 		SDL_GL_SwapWindow(window);
 		SDL_Delay(1000 / 60);

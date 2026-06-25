@@ -63,9 +63,11 @@ typedef struct {
 } Texture;
 
 void load_texture(const char *path, Texture *const out);
+TTF_Font *load_font(const char *path, int pt_size);
 void create_texture_from_string(TTF_Font *font, const char *text, Uint8 r, Uint8 g, Uint8 b, Uint8 a, Uint32 wrapLength, Texture *const out);
 void draw_texture(const Texture *texture, const Transform *transform);
 void destroy_texture(Texture *texture);
+void destroy_font(TTF_Font *font);
 
 // TODO void window_to_render_position(int screen_x, int screen_y, float *const out_x, float *const out_y);
 

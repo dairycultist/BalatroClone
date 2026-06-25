@@ -40,6 +40,16 @@ void load_texture(const char *path, Texture *const out) {
 	SDL_FreeSurface(surface);
 }
 
+TTF_Font *load_font(const char *path, int pt_size) {
+
+	TTF_Font *font = TTF_OpenFont(path, pt_size);
+
+	if (!font)
+		THROW("Could not open font \"%s\"\n%s\n", path, TTF_GetError());
+
+	return font;
+}
+
 void create_texture_from_string(TTF_Font *font, const char *text, Uint8 r, Uint8 g, Uint8 b, Uint8 a, Uint32 wrapLength, Texture *const out) {
 
 	if (!font)
@@ -130,6 +140,11 @@ void destroy_texture(Texture *texture) {
 	texture->texture = 0;
 	texture->w = 0;
 	texture->h = 0;
+}
+
+void destroy_font(TTF_Font *font) {
+
+	TTF_CloseFont(font);
 }
 
 static inline GLuint load_shader(const char *shadercode, const GLenum shader_type) {

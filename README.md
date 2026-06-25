@@ -4,6 +4,10 @@ deckbuilder roguelike (linear map with combat points and shop points)
 
 maybe a playable character system (start with different decks, see hot lady on side of screen) but that's for later
 
+maybe wildcard elements but that's also for later
+
+also a shopkeeper character, maybe with snippy dialogue but... yknow
+
 during combat you have a hand of three cards which you get three discards for per attack.
 you can play up to three cards but they must be the same element, and the cards can have
 different effects like:
@@ -17,6 +21,8 @@ Enemies can be weak to (double) or resistant to (half rounded-down) damage from 
 technically be weak or resistant to every element. You start with three different elements composing
 your deck, but shops let you unlock one or two special ones that you want to add a few of to your
 deck if you want to be strong against late-game enemies.
+
+enemies, cards, playable characters, maybe elements, etc should be data (not hardcoded)
 
 ```
 sudo apt update
