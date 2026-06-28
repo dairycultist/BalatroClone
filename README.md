@@ -1,28 +1,24 @@
 balatro clone in C since balatro and C are awesome plus I can add fat women
 
-deckbuilder roguelike (linear map with combat points and shop points)
+roguelike deckbuilder w
 
-maybe a playable character system (start with different decks, see hot lady on side of screen) but that's for later
+deckbuilder roguelike (linear map with combat points and shop points). the theme is you're
+basically playing a symmetric royal card game against different opponents.
 
-maybe wildcard elements but that's also for later
+ideas:
+- playable character system (start with different decks, see hot lady on side of screen)
+- shopkeeper character with snippy dialogue
+- opponent characters also have snippy dialogue?
 
-also a shopkeeper character, maybe with snippy dialogue but... yknow
+https://x.com/VonGulli/status/2071140263901397439/photo/1
 
-during combat you have a hand of three cards which you get three discards for per attack.
-you can play up to three cards but they must be the same element, and the cards can have
-different effects like:
-- deal 1 damage
-- heal 1 health
-- deal 1 damage to self (debuff card)
-- deal 3 damage if played with two other cards
+opponents, cards, playable characters, etc should be data (not hardcoded)
 
-Enemies can be weak to (double) or resistant to (half rounded-down) damage from certain elements
-(enemies don't have an element themselves). There's no element-beats-element loop; an enemy can
-technically be weak or resistant to every element. You start with three different elements composing
-your deck, but shops let you unlock one or two special ones that you want to add a few of to your
-deck if you want to be strong against late-game enemies.
+5x5 grid, on which you and your opponent have **pieces** that have an HP and an ATK value
 
-enemies, cards, playable characters, maybe elements, etc should be data (not hardcoded)
+on your turn you can move a piece, if you try to move a piece into an enemy piece they both attack each other
+
+you can hold up to 5 cards; cards can be either **piece cards** (gives you a piece with a certain stat) or **ability cards** (balatro jokers, e.g. "when your piece is attacked, it gains +1 ATK")
 
 ```
 sudo apt update
@@ -30,3 +26,9 @@ sudo apt install libsdl2-dev libsdl2-image-dev libgl1-mesa-dev libglew-dev libsd
 ```
 
 font https://www.dafont.com/creato-display.font
+
+Cool medieval fonts
+
+https://www.dafont.com/augusta.font
+
+https://www.dafont.com/vividly.font
