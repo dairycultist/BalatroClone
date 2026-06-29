@@ -11,7 +11,7 @@ typedef struct {
 
 typedef struct {
 
-    CardType type;
+    CardType *type;
     Transform transform;
 
 } CardInstance;

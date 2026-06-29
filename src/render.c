@@ -167,6 +167,16 @@ inline int texture_contains_point(float u, float v, Transform *transform, Textur
 	);
 }
 
+float texture_effective_width(Transform *transform, Texture *texture) {
+
+	return 2.0 * transform->s_x * texture->w * SCALE / 5.0 / ASPECT;
+}
+
+float texture_effective_height(Transform *transform, Texture *texture) {
+
+	return 2.0 * transform->s_y * texture->h * SCALE / 5.0;
+}
+
 static inline GLuint load_shader(const char *shadercode, const GLenum shader_type) {
 
 	GLuint shader = glCreateShader(shader_type);
