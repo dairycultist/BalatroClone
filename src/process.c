@@ -25,9 +25,9 @@ void logical_init() {
     add_piece_opponent(PIECE_TYPE_KING);
 }
 
-void process(float mouse_u, float mouse_v) {
+void process(float mouse_u, float mouse_v, float mouse_clicked) {
 
-    process_board_and_pieces(t, mouse_u, mouse_v);
+    process_board_and_pieces(t, mouse_u, mouse_v, mouse_clicked);
 
     t += 0.02;
 

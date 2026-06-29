@@ -24,6 +24,8 @@ static PieceType piece_types[] = {
 static PieceInstance pieces_player[MAX_PIECE_INSTANCES]; // if .type is NULL, that instance does not exist
 static PieceInstance pieces_opponent[MAX_PIECE_INSTANCES];
 
+static PieceInstance *selected_piece;
+
 static Transform board_transform = { 0, 0, 1, 1, 0, 0, 0 };
 static Texture board_texture;
 static float tile_width;
@@ -92,7 +94,7 @@ void add_piece_opponent(int piece_type) {
     }
 }
 
-void process_board_and_pieces(float t, float mouse_u, float mouse_v) {
+void process_board_and_pieces(float t, float mouse_u, float mouse_v, float mouse_clicked) {
 
     draw_texture(&board_texture, &board_transform);
 
@@ -105,8 +107,33 @@ void process_board_and_pieces(float t, float mouse_u, float mouse_v) {
             piece_transform.u = tile_width  * (2 - pieces_player[i].board_x);
             piece_transform.v = tile_height * (2 - pieces_player[i].board_y);
 
+            if (&pieces_player[i] == selected_piece) {
+
+                piece_transform.v += tile_height / 2.0;
+
+                // TODO draw legal move spots
+            }
+
             if (texture_contains_point(mouse_u, mouse_v, &piece_transform, &pieces_player[i].type->texture_player)) {
+
                 piece_transform.a_z = sin(t * 5.0) * 0.1;
+
+                if (mouse_clicked) {
+
+                    if (&pieces_player[i] == selected_piece) {
+
+                        // deselect this piece
+                        selected_piece = NULL;
+
+                    } else {
+
+                        // select this piece
+                        selected_piece = &pieces_player[i];
+
+                        // shoddy attempt at animation
+                        piece_transform.v += tile_height / 4.0;
+                    }
+                }
             }
 
             draw_texture(&pieces_player[i].type->texture_player, &piece_transform);

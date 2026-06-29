@@ -47,9 +47,11 @@ int main() {
 	bool running = TRUE;
 
 	int viewport_w = window_w, viewport_h = window_h, viewport_x = 0, viewport_y = 0;
-	float mouse_u = 0, mouse_v = 0;
+	float mouse_u = 0, mouse_v = 0, mouse_clicked = 0;
 
 	while (running) {
+
+		mouse_clicked = 0;
 
 		while (SDL_PollEvent(&event)) {
 
@@ -94,10 +96,14 @@ int main() {
 				mouse_v /= viewport_h;
 
 				mouse_v *= -1; // OpenGL positive V is up, but SDL positive window Y is down
+
+			} else if (event.type == SDL_MOUSEBUTTONDOWN) {
+
+				mouse_clicked = 1;
 			}
 		}
 
-		process(mouse_u, mouse_v);
+		process(mouse_u, mouse_v, mouse_clicked);
 
 		SDL_GL_SwapWindow(window);
 		SDL_Delay(1000 / 60);
