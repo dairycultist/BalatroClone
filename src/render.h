@@ -9,7 +9,10 @@
 // free aspect ratio is outside of scope (involves updating UI meshes and their positions, no thanks)
 #define ASPECT 1.666
 
-// how must perspective-ness should happen during sprite rotation
+// how much to scale each texture, I mean it's pretty self explanatory
+#define SCALE 0.005
+
+// how must perspective-ness should happen during texture rotation
 #define DEPTH 0.5
 
 #define VERTEX_SHADERCODE "#version 150 core\n"\
@@ -30,10 +33,10 @@
 		"outColor = texture(tex, frag_UV);"\
 	"}"
 
-// hardcoded unit square (every sprite is drawn with the same mesh but transformed)
+// hardcoded unit square (every texture is drawn with the same mesh but transformed)
 // technically the UVs are flipped vertically because the SDL_Surface spec is different
 // from the OpenGL spec and I don't feel like bothering converting from one to another
-#define SPRITE_MESH_DATA (float[]) { \
+#define TEXTURE_MESH_DATA (float[]) { \
 	 1,  1, 1, 0,\
 	-1, -1, 0, 1,\
 	-1,  1, 0, 0,\
@@ -41,7 +44,7 @@
 	 1, -1, 1, 1,\
 	-1, -1, 0, 1\
 }
-#define SPRITE_MESH_VERTEX_COUNT 6
+#define TEXTURE_MESH_VERTEX_COUNT 6
 
 typedef struct {
 

@@ -1,8 +1,8 @@
 #include "render.h"
 #include "error.h"
 
-static GLuint sprite_shader;
-static GLuint sprite_vao; // vertex array
+static GLuint texture_shader;
+static GLuint texture_vao; // vertex array
 
 static void create_texture_from_surface(SDL_Surface *surface, Texture *const out) {
 
@@ -79,10 +79,10 @@ void draw_texture(const Texture *texture, const Transform *transform) {
 
 	// scale in world
 	GLfloat model_matrix[4][4] = {
-		{  transform->s_x * texture->w / 128.0 * DEPTH,                                            0, 0, 0 },
-		{                                            0,  transform->s_y * texture->h / 128.0 * DEPTH, 0, 0 },
-		{                                            0,                                            0, 1, 0 },
-		{                                            0,                                            0, 0, 1 }
+		{  transform->s_x * texture->w * SCALE * DEPTH,                                           0, 0, 0 },
+		{                                            0, transform->s_y * texture->h * SCALE * DEPTH, 0, 0 },
+		{                                            0,                                           0, 1, 0 },
+		{                                            0,                                           0, 0, 1 }
 	};
 
 	// rotate
@@ -124,14 +124,14 @@ void draw_texture(const Texture *texture, const Transform *transform) {
 	mat4_mult(trans_matrix, model_matrix, model_matrix);
 
 	// bind the mesh and its texture
-	glBindVertexArray(sprite_vao);
+	glBindVertexArray(texture_vao);
 	glBindTexture(GL_TEXTURE_2D, texture->texture);
 
 	// load the uniform we just calculated
-	glUniformMatrix4fv(glGetUniformLocation(sprite_shader, "model_matrix"), 1, GL_FALSE, &model_matrix[0][0]);
+	glUniformMatrix4fv(glGetUniformLocation(texture_shader, "model_matrix"), 1, GL_FALSE, &model_matrix[0][0]);
 
 	// draw
-	glDrawArrays(GL_TRIANGLES, 0, SPRITE_MESH_VERTEX_COUNT);
+	glDrawArrays(GL_TRIANGLES, 0, TEXTURE_MESH_VERTEX_COUNT);
 }
 
 void destroy_texture(Texture *texture) {
@@ -162,8 +162,8 @@ inline int texture_contains_point(float u, float v, Transform *transform, Textur
 		v,
 		transform->u,
 		transform->v,
-		transform->s_x * texture->w / 128.0 / 5.0 / ASPECT,
-		transform->s_y * texture->h / 128.0 / 5.0 // same 5.0 as the "translate back" value in draw_texture (hardcoded cuz I don't care)
+		transform->s_x * texture->w * SCALE / 5.0 / ASPECT,
+		transform->s_y * texture->h * SCALE / 5.0 // same 5.0 as the "translate back" value in draw_texture (hardcoded cuz I don't care)
 	);
 }
 
@@ -179,19 +179,19 @@ static inline GLuint load_shader(const char *shadercode, const GLenum shader_typ
 void init_renderer() {
 
 	// initialize shader
-	sprite_shader = glCreateProgram();
+	texture_shader = glCreateProgram();
 	
-	glAttachShader(sprite_shader, load_shader(VERTEX_SHADERCODE, GL_VERTEX_SHADER));
-	glAttachShader(sprite_shader, load_shader(FRAGMENT_SHADERCODE, GL_FRAGMENT_SHADER));
+	glAttachShader(texture_shader, load_shader(VERTEX_SHADERCODE, GL_VERTEX_SHADER));
+	glAttachShader(texture_shader, load_shader(FRAGMENT_SHADERCODE, GL_FRAGMENT_SHADER));
 
-	glLinkProgram(sprite_shader);	// apply changes to shader program
-	glUseProgram(sprite_shader);	// since this is the only shader, we can just load it right now
+	glLinkProgram(texture_shader);	// apply changes to shader program
+	glUseProgram(texture_shader);	// since this is the only shader, we can just load it right now
 
-	// initialize the sprite mesh's vertex array
-	glGenVertexArrays(1, &sprite_vao);
-	glBindVertexArray(sprite_vao);
+	// initialize the texture mesh's vertex array
+	glGenVertexArrays(1, &texture_vao);
+	glBindVertexArray(texture_vao);
 
-	// make vertex buffer (stored by sprite_vao)
+	// make vertex buffer (stored by texture_vao)
 	GLuint vertex_buffer;
 	glGenBuffers(1, &vertex_buffer);
 
@@ -199,14 +199,14 @@ void init_renderer() {
 	glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer);
 
 	// copy vertex data into the active buffer
-	glBufferData(GL_ARRAY_BUFFER, sizeof(float) * 4 * SPRITE_MESH_VERTEX_COUNT, SPRITE_MESH_DATA, GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(float) * 4 * TEXTURE_MESH_VERTEX_COUNT, TEXTURE_MESH_DATA, GL_STATIC_DRAW);
 
 	// link active vertex data and shader attributes
-	GLint pos_attrib = glGetAttribLocation(sprite_shader, "position");
+	GLint pos_attrib = glGetAttribLocation(texture_shader, "position");
 	glVertexAttribPointer(pos_attrib, 2, GL_FLOAT, GL_FALSE, sizeof(float) * 4, 0);
 	glEnableVertexAttribArray(pos_attrib);
 
-	GLint uv_attrib = glGetAttribLocation(sprite_shader, "UV");
+	GLint uv_attrib = glGetAttribLocation(texture_shader, "UV");
 	glVertexAttribPointer(uv_attrib, 2, GL_FLOAT, GL_FALSE, sizeof(float) * 4, (GLvoid *) (sizeof(float) * 2));
 	glEnableVertexAttribArray(uv_attrib);
 
