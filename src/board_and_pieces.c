@@ -1,4 +1,5 @@
 #include "board_and_pieces.h"
+#include <math.h>
 
 typedef struct {
 
@@ -7,12 +8,20 @@ typedef struct {
 
 } PieceType;
 
+typedef struct {
+
+    PieceType *type;
+    int hp, atk;
+    int board_x, board_y;
+    Texture text_texture;
+
+} PieceInstance;
+
 static PieceType piece_types[] = {
-    [ PIECE_TYPE_DNE ] = {},
     [ PIECE_TYPE_KING ] = { 1, 0 }
 };
 
-static PieceInstance pieces_player[MAX_PIECE_INSTANCES]; // if .type is PIECE_TYPE_DNE, that instance does not exist
+static PieceInstance pieces_player[MAX_PIECE_INSTANCES]; // if .type is NULL, that instance does not exist
 static PieceInstance pieces_opponent[MAX_PIECE_INSTANCES];
 
 static Transform board_transform = { 0, 0, 1, 1, 0, 0, 0 };
@@ -49,11 +58,11 @@ void add_piece_player(int piece_type) {
 
     for (int i = 0; i < MAX_PIECE_INSTANCES; i++) {
         
-        if (pieces_player[i].type == PIECE_TYPE_DNE) {
+        if (pieces_player[i].type == NULL) {
 
-            pieces_player[i].type = piece_type;
-            pieces_player[i].hp = piece_types[piece_type].base_hp;
-            pieces_player[i].atk = piece_types[piece_type].base_atk;
+            pieces_player[i].type = &piece_types[piece_type];
+            pieces_player[i].hp = pieces_player[i].type->base_hp;
+            pieces_player[i].atk = pieces_player[i].type->base_atk;
             pieces_player[i].board_x = i % 5;
             pieces_player[i].board_y = 4 - i / 5;
 
@@ -68,11 +77,11 @@ void add_piece_opponent(int piece_type) {
 
     for (int i = 0; i < MAX_PIECE_INSTANCES; i++) {
         
-        if (pieces_opponent[i].type == PIECE_TYPE_DNE) {
+        if (!pieces_opponent[i].type) {
 
-            pieces_opponent[i].type = piece_type;
-            pieces_opponent[i].hp = piece_types[piece_type].base_hp;
-            pieces_opponent[i].atk = piece_types[piece_type].base_atk;
+            pieces_opponent[i].type = &piece_types[piece_type];
+            pieces_opponent[i].hp = pieces_opponent[i].type->base_hp;
+            pieces_opponent[i].atk = pieces_opponent[i].type->base_atk;
             pieces_opponent[i].board_x = 4 - i % 5;
             pieces_opponent[i].board_y = i / 5;
             
@@ -83,7 +92,7 @@ void add_piece_opponent(int piece_type) {
     }
 }
 
-void draw_board_and_pieces(float t) {
+void process_board_and_pieces(float t, float mouse_u, float mouse_v) {
 
     draw_texture(&board_texture, &board_transform);
 
@@ -91,21 +100,26 @@ void draw_board_and_pieces(float t) {
 
     for (int i = 0; i < MAX_PIECE_INSTANCES; i++) {
         
-        if (pieces_player[i].type != PIECE_TYPE_DNE) {
+        if (pieces_player[i].type) {
 
             piece_transform.u = tile_width  * (2 - pieces_player[i].board_x);
             piece_transform.v = tile_height * (2 - pieces_player[i].board_y);
 
-            draw_texture(&piece_types[pieces_player[i].type].texture_player, &piece_transform);
+            if (texture_contains_point(mouse_u, mouse_v, &piece_transform, &pieces_player[i].type->texture_player)) {
+                piece_transform.a_z = sin(t * 5.0) * 0.1;
+            }
+
+            draw_texture(&pieces_player[i].type->texture_player, &piece_transform);
+            piece_transform.a_z = 0.0;
             draw_texture(&pieces_player[i].text_texture, &piece_transform);
         }
 
-        if (pieces_opponent[i].type != PIECE_TYPE_DNE) {
+        if (pieces_opponent[i].type) {
 
             piece_transform.u = tile_width  * (2 - pieces_opponent[i].board_x);
             piece_transform.v = tile_height * (2 - pieces_opponent[i].board_y);
 
-            draw_texture(&piece_types[pieces_opponent[i].type].texture_opponent, &piece_transform);
+            draw_texture(&pieces_opponent[i].type->texture_opponent, &piece_transform);
             draw_texture(&pieces_opponent[i].text_texture, &piece_transform);
         }
     }

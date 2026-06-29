@@ -5,21 +5,11 @@
 
 #define MAX_PIECE_INSTANCES 8
 
-#define PIECE_TYPE_DNE 0
-#define PIECE_TYPE_KING 1
-
-typedef struct {
-
-    int type;
-    int hp, atk;
-    int board_x, board_y;
-    Texture text_texture;
-
-} PieceInstance;
+#define PIECE_TYPE_KING 0
 
 void initialize_board_and_pieces();
 void add_piece_player(int piece_type);
 void add_piece_opponent(int piece_type);
-void draw_board_and_pieces(float t);
+void process_board_and_pieces(float t, float mouse_u, float mouse_v);
 
 #endif

@@ -27,25 +27,27 @@ void logical_init() {
 
 void process(float mouse_u, float mouse_v) {
 
-    draw_board_and_pieces(t);
+    process_board_and_pieces(t, mouse_u, mouse_v);
 
     t += 0.02;
 
     if (texture_contains_point(mouse_u, mouse_v, &card_transform, &test_card)) {
 
-        card_transform.a_y = sin(t) * 0.2;
-        card_transform.a_z = sin(t) * 0.05;
+        card_transform.a_y = 0.0;
+        card_transform.a_z = 0.0;
 
         draw_texture(&test_card, &card_transform);
     
-        card_transform.v -= 0.5;
+        float off = (texture_effective_height(&card_transform, &test_card) + texture_effective_height(&card_transform, &test_text)) / 2.0 + 0.05;
+
+        card_transform.v -= off;
         draw_texture(&test_text, &card_transform);
-        card_transform.v += 0.5;
+        card_transform.v += off;
 
     } else {
 
-        card_transform.a_y = 0.0;
-        card_transform.a_z = 0.0;
+        card_transform.a_y = sin(t) * 0.2;
+        card_transform.a_z = sin(t) * 0.05;
 
         draw_texture(&test_card, &card_transform);
     }
