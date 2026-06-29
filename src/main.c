@@ -23,7 +23,7 @@ int main() {
 	SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE, 8);
 
 	// create the window
-	int window_w = 400, window_h = window_w / ASPECT;
+	int window_w = 800, window_h = window_w / ASPECT;
 
 	SDL_Window *window = SDL_CreateWindow("Game", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, window_w, window_h, SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE);
 

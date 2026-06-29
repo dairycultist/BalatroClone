@@ -69,8 +69,11 @@ void draw_texture(const Texture *texture, const Transform *transform);
 void destroy_texture(Texture *texture);
 void destroy_font(TTF_Font *font);
 
-int aabb_contains_raw(float u, float v, float aabb_u, float aabb_v, float aabb_wd2, float aabb_hd2); // aabb width/height divided by 2
-int aabb_contains(float u, float v, Transform *transform, Texture *texture); // doesn't take into account rotation, yes scale tho
+int aabb_contains_point(float u, float v, float aabb_u, float aabb_v, float aabb_wd2, float aabb_hd2); // aabb width/height divided by 2
+int texture_contains_point(float u, float v, Transform *transform, Texture *texture); // doesn't take into account rotation, yes scale tho
+
+// float texture_effective_width(Transform *transform, Texture *texture);
+// float texture_effective_height(Transform *transform, Texture *texture);
 
 void init_renderer();
 

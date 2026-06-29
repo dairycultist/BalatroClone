@@ -147,7 +147,7 @@ void destroy_font(TTF_Font *font) {
 	TTF_CloseFont(font);
 }
 
-inline int aabb_contains_raw(float u, float v, float aabb_u, float aabb_v, float aabb_wd2, float aabb_hd2) {
+inline int aabb_contains_point(float u, float v, float aabb_u, float aabb_v, float aabb_wd2, float aabb_hd2) {
 
 	return u > aabb_u - aabb_wd2
 		&& u < aabb_u + aabb_wd2
@@ -155,9 +155,9 @@ inline int aabb_contains_raw(float u, float v, float aabb_u, float aabb_v, float
 		&& v < aabb_v + aabb_hd2;
 }
 
-inline int aabb_contains(float u, float v, Transform *transform, Texture *texture) {
+inline int texture_contains_point(float u, float v, Transform *transform, Texture *texture) {
 
-	return aabb_contains_raw(
+	return aabb_contains_point(
 		u,
 		v,
 		transform->u,
