@@ -15,7 +15,7 @@ void logical_init() {
 
 	load_texture("./res/piece_card_pawn.png", &test_card);
 
-    TTF_Font *font = load_font("./res/font/CreatoDisplay-Regular.otf", 20);
+    TTF_Font *font = load_font("./res/font/gothica/bold.ttf", 24);
 
 	create_texture_from_string(font, "Pawn (1 HP, 1 ATK)\nBecomes a Queen (4 HP, 4 ATK) upon\nreaching the far side of the board", 255, 255, 255, 255, 0, &test_text);
 

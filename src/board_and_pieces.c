@@ -42,7 +42,7 @@ void initialize_board_and_pieces() {
     tile_width = texture_effective_width(&board_transform, &board_texture) / 5.0;
     tile_height = texture_effective_height(&board_transform, &board_texture) / 5.0;
 
-    font = load_font("./res/font/CreatoDisplay-Regular.otf", 20);
+    font = load_font("./res/font/gothica/bold.ttf", 24);
 }
 
 static void refresh_piece_instance_text(PieceInstance *instance, int is_opponent) {
