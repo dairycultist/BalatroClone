@@ -7,10 +7,14 @@ static Transform card_transform_hover = { 0, 0, 1, 1, 0, 0, 0 };
 static Texture test_card;
 static Texture test_text;
 
+static Transform board_transform = { 0, 0, 1, 1, 0, 0, 0 };
+static Texture board_texture;
+
 static float t;
 
 void logical_init() {
 
+    load_texture("./res/board.png", &board_texture);
 	load_texture("./res/piece_card_pawn.png", &test_card);
 
     TTF_Font *font = load_font("./res/font/CreatoDisplay-Regular.otf", 20);
@@ -19,6 +23,8 @@ void logical_init() {
 }
 
 void process(float mouse_u, float mouse_v) {
+
+    draw_texture(&board_texture, &board_transform);
 
     card_transform_idle.a_y = sin(t) * 0.2;
     card_transform_idle.a_z = sin(t) * 0.05;
