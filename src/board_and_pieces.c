@@ -132,10 +132,6 @@ void process_board_and_pieces(float t, float mouse_u, float mouse_v, float mouse
             piece_transform.u = tile_width  * (pieces_player[i].board_x - 2);
             piece_transform.v = tile_height * (pieces_player[i].board_y - 2);
 
-            // selected piece is lifted a bit
-            if (&pieces_player[i] == selected_piece)
-                piece_transform.v += tile_height / 4.0;
-
             // logic for hovering/selecting a piece
             if (texture_contains_point(mouse_u, mouse_v, &piece_transform, &pieces_player[i].type->texture_player)) {
 
@@ -152,12 +148,13 @@ void process_board_and_pieces(float t, float mouse_u, float mouse_v, float mouse
 
                         // select this piece
                         selected_piece = &pieces_player[i];
-
-                        // shoddy attempt at animation
-                        piece_transform.v += tile_height / 8.0;
                     }
                 }
             }
+
+            // selected piece is lifted a bit (only after handling hover detection at normal position!)
+            if (&pieces_player[i] == selected_piece)
+                piece_transform.v += tile_height / 4.0;
 
             // draw the piece and its stats
             draw_texture(&pieces_player[i].type->texture_player, &piece_transform);
