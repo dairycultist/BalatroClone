@@ -31,12 +31,17 @@ static Texture board_texture;
 static float tile_width;
 static float tile_height;
 
+static Texture move_pos_textures[2];
+
 static TTF_Font *font;
 
 void initialize_board_and_pieces() {
 
     load_texture("./res/piece_king_player.png", &piece_types[PIECE_TYPE_KING].texture_player);
     load_texture("./res/piece_king_opponent.png", &piece_types[PIECE_TYPE_KING].texture_opponent);
+
+    load_texture("./res/move_position.png", &move_pos_textures[0]);
+    load_texture("./res/move_position_hovered.png", &move_pos_textures[1]);
 
     load_texture("./res/board.png", &board_texture);
     tile_width = texture_effective_width(&board_transform, &board_texture) / 5.0;
@@ -94,6 +99,25 @@ void add_piece_opponent(int piece_type) {
     }
 }
 
+static int is_piece_player_occupying(int board_x, int board_y) {
+
+    for (int i = 0; i < MAX_PIECE_INSTANCES; i++) {
+        
+        if (pieces_player[i].type != NULL && pieces_player[i].board_x == board_x && pieces_player[i].board_y == board_y)
+            return 1;
+    }
+
+    return 0;
+}
+
+static void get_piece_legal_moves(PieceInstance *instance, int *up, int *down, int *left, int *right) {
+
+    *up = instance->board_y != 0 && !is_piece_player_occupying(instance->board_x, instance->board_y - 1);
+    *down = instance->board_y != 4 && !is_piece_player_occupying(instance->board_x, instance->board_y + 1);
+    *left = instance->board_x != 4 && !is_piece_player_occupying(instance->board_x + 1, instance->board_y);
+    *right = instance->board_x != 0 && !is_piece_player_occupying(instance->board_x - 1, instance->board_y);
+}
+
 void process_board_and_pieces(float t, float mouse_u, float mouse_v, float mouse_clicked) {
 
     draw_texture(&board_texture, &board_transform);
@@ -107,13 +131,11 @@ void process_board_and_pieces(float t, float mouse_u, float mouse_v, float mouse
             piece_transform.u = tile_width  * (2 - pieces_player[i].board_x);
             piece_transform.v = tile_height * (2 - pieces_player[i].board_y);
 
-            if (&pieces_player[i] == selected_piece) {
+            // selected piece is lifted a bit
+            if (&pieces_player[i] == selected_piece)
+                piece_transform.v += tile_height / 4.0;
 
-                piece_transform.v += tile_height / 2.0;
-
-                // TODO draw legal move spots
-            }
-
+            // logic for hovering/selecting a piece
             if (texture_contains_point(mouse_u, mouse_v, &piece_transform, &pieces_player[i].type->texture_player)) {
 
                 piece_transform.a_z = sin(t * 5.0) * 0.1;
@@ -131,11 +153,12 @@ void process_board_and_pieces(float t, float mouse_u, float mouse_v, float mouse
                         selected_piece = &pieces_player[i];
 
                         // shoddy attempt at animation
-                        piece_transform.v += tile_height / 4.0;
+                        piece_transform.v += tile_height / 8.0;
                     }
                 }
             }
 
+            // draw the piece and its stats
             draw_texture(&pieces_player[i].type->texture_player, &piece_transform);
             piece_transform.a_z = 0.0;
             draw_texture(&pieces_player[i].text_texture, &piece_transform);
@@ -148,6 +171,72 @@ void process_board_and_pieces(float t, float mouse_u, float mouse_v, float mouse
 
             draw_texture(&pieces_opponent[i].type->texture_opponent, &piece_transform);
             draw_texture(&pieces_opponent[i].text_texture, &piece_transform);
+        }
+    }
+
+    // draw legal move spots for the selected piece
+    if (selected_piece) {
+
+        piece_transform.u = tile_width  * (2 - selected_piece->board_x);
+        piece_transform.v = tile_height * (2 - selected_piece->board_y);
+        
+        int up, down, left, right;
+        get_piece_legal_moves(selected_piece, &up, &down, &left, &right);
+
+        if (up) {
+            piece_transform.v += tile_height;
+            if (texture_contains_point(mouse_u, mouse_v, &piece_transform, &move_pos_textures[0])) {
+                draw_texture(&move_pos_textures[1], &piece_transform);
+                if (mouse_clicked) {
+                    selected_piece->board_y--;
+                    selected_piece = NULL;
+                }
+            } else {
+                draw_texture(&move_pos_textures[0], &piece_transform);
+            }
+            piece_transform.v -= tile_height;
+        }
+
+        if (down) {
+            piece_transform.v -= tile_height;
+            if (texture_contains_point(mouse_u, mouse_v, &piece_transform, &move_pos_textures[0])) {
+                draw_texture(&move_pos_textures[1], &piece_transform);
+                if (mouse_clicked) {
+                    selected_piece->board_y++;
+                    selected_piece = NULL;
+                }
+            } else {
+                draw_texture(&move_pos_textures[0], &piece_transform);
+            }
+            piece_transform.v += tile_height;
+        }
+
+        if (left) {
+            piece_transform.u -= tile_width;
+            if (texture_contains_point(mouse_u, mouse_v, &piece_transform, &move_pos_textures[0])) {
+                draw_texture(&move_pos_textures[1], &piece_transform);
+                if (mouse_clicked) {
+                    selected_piece->board_x++;
+                    selected_piece = NULL;
+                }
+            } else {
+                draw_texture(&move_pos_textures[0], &piece_transform);
+            }
+            piece_transform.u += tile_width;
+        }
+
+        if (right) {
+            piece_transform.u += tile_width;
+            if (texture_contains_point(mouse_u, mouse_v, &piece_transform, &move_pos_textures[0])) {
+                draw_texture(&move_pos_textures[1], &piece_transform);
+                if (mouse_clicked) {
+                    selected_piece->board_x--;
+                    selected_piece = NULL;
+                }
+            } else {
+                draw_texture(&move_pos_textures[0], &piece_transform);
+            }
+            piece_transform.u -= tile_width;
         }
     }
 }
