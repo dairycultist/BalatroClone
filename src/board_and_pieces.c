@@ -70,8 +70,8 @@ void add_piece_player(int piece_type) {
             pieces_player[i].type = &piece_types[piece_type];
             pieces_player[i].hp = pieces_player[i].type->base_hp;
             pieces_player[i].atk = pieces_player[i].type->base_atk;
-            pieces_player[i].board_x = i % 5;
-            pieces_player[i].board_y = 4 - i / 5;
+            pieces_player[i].board_x = 4 - i % 5;
+            pieces_player[i].board_y = i / 5;
 
             refresh_piece_instance_text(&pieces_player[i], 0);
 
@@ -89,8 +89,8 @@ void add_piece_opponent(int piece_type) {
             pieces_opponent[i].type = &piece_types[piece_type];
             pieces_opponent[i].hp = pieces_opponent[i].type->base_hp;
             pieces_opponent[i].atk = pieces_opponent[i].type->base_atk;
-            pieces_opponent[i].board_x = 4 - i % 5;
-            pieces_opponent[i].board_y = i / 5;
+            pieces_opponent[i].board_x = i % 5;
+            pieces_opponent[i].board_y = 4 - i / 5;
             
             refresh_piece_instance_text(&pieces_opponent[i], 1);
 
@@ -112,10 +112,10 @@ static int is_piece_player_occupying(int board_x, int board_y) {
 
 static void get_piece_legal_moves(PieceInstance *instance, int *up, int *down, int *left, int *right) {
 
-    *up = instance->board_y != 0 && !is_piece_player_occupying(instance->board_x, instance->board_y - 1);
-    *down = instance->board_y != 4 && !is_piece_player_occupying(instance->board_x, instance->board_y + 1);
-    *left = instance->board_x != 4 && !is_piece_player_occupying(instance->board_x + 1, instance->board_y);
-    *right = instance->board_x != 0 && !is_piece_player_occupying(instance->board_x - 1, instance->board_y);
+    *up = instance->board_y != 4 && !is_piece_player_occupying(instance->board_x, instance->board_y + 1);
+    *down = instance->board_y != 0 && !is_piece_player_occupying(instance->board_x, instance->board_y - 1);
+    *left = instance->board_x != 0 && !is_piece_player_occupying(instance->board_x - 1, instance->board_y);
+    *right = instance->board_x != 4 && !is_piece_player_occupying(instance->board_x + 1, instance->board_y);
 }
 
 void process_board_and_pieces(float t, float mouse_u, float mouse_v, float mouse_clicked) {
@@ -126,10 +126,11 @@ void process_board_and_pieces(float t, float mouse_u, float mouse_v, float mouse
 
     for (int i = 0; i < MAX_PIECE_INSTANCES; i++) {
         
+        // process player piece (if it exists)
         if (pieces_player[i].type) {
 
-            piece_transform.u = tile_width  * (2 - pieces_player[i].board_x);
-            piece_transform.v = tile_height * (2 - pieces_player[i].board_y);
+            piece_transform.u = tile_width  * (pieces_player[i].board_x - 2);
+            piece_transform.v = tile_height * (pieces_player[i].board_y - 2);
 
             // selected piece is lifted a bit
             if (&pieces_player[i] == selected_piece)
@@ -164,10 +165,11 @@ void process_board_and_pieces(float t, float mouse_u, float mouse_v, float mouse
             draw_texture(&pieces_player[i].text_texture, &piece_transform);
         }
 
+        // process opponent piece (if it exists)
         if (pieces_opponent[i].type) {
 
-            piece_transform.u = tile_width  * (2 - pieces_opponent[i].board_x);
-            piece_transform.v = tile_height * (2 - pieces_opponent[i].board_y);
+            piece_transform.u = tile_width  * (pieces_opponent[i].board_x - 2);
+            piece_transform.v = tile_height * (pieces_opponent[i].board_y - 2);
 
             draw_texture(&pieces_opponent[i].type->texture_opponent, &piece_transform);
             draw_texture(&pieces_opponent[i].text_texture, &piece_transform);
@@ -177,8 +179,8 @@ void process_board_and_pieces(float t, float mouse_u, float mouse_v, float mouse
     // draw legal move spots for the selected piece
     if (selected_piece) {
 
-        piece_transform.u = tile_width  * (2 - selected_piece->board_x);
-        piece_transform.v = tile_height * (2 - selected_piece->board_y);
+        piece_transform.u = tile_width  * (selected_piece->board_x - 2);
+        piece_transform.v = tile_height * (selected_piece->board_y - 2);
         
         int up, down, left, right;
         get_piece_legal_moves(selected_piece, &up, &down, &left, &right);
@@ -188,7 +190,7 @@ void process_board_and_pieces(float t, float mouse_u, float mouse_v, float mouse
             if (texture_contains_point(mouse_u, mouse_v, &piece_transform, &move_pos_textures[0])) {
                 draw_texture(&move_pos_textures[1], &piece_transform);
                 if (mouse_clicked) {
-                    selected_piece->board_y--;
+                    selected_piece->board_y++;
                     selected_piece = NULL;
                 }
             } else {
@@ -202,7 +204,7 @@ void process_board_and_pieces(float t, float mouse_u, float mouse_v, float mouse
             if (texture_contains_point(mouse_u, mouse_v, &piece_transform, &move_pos_textures[0])) {
                 draw_texture(&move_pos_textures[1], &piece_transform);
                 if (mouse_clicked) {
-                    selected_piece->board_y++;
+                    selected_piece->board_y--;
                     selected_piece = NULL;
                 }
             } else {
@@ -216,7 +218,7 @@ void process_board_and_pieces(float t, float mouse_u, float mouse_v, float mouse
             if (texture_contains_point(mouse_u, mouse_v, &piece_transform, &move_pos_textures[0])) {
                 draw_texture(&move_pos_textures[1], &piece_transform);
                 if (mouse_clicked) {
-                    selected_piece->board_x++;
+                    selected_piece->board_x--;
                     selected_piece = NULL;
                 }
             } else {
@@ -230,7 +232,7 @@ void process_board_and_pieces(float t, float mouse_u, float mouse_v, float mouse
             if (texture_contains_point(mouse_u, mouse_v, &piece_transform, &move_pos_textures[0])) {
                 draw_texture(&move_pos_textures[1], &piece_transform);
                 if (mouse_clicked) {
-                    selected_piece->board_x--;
+                    selected_piece->board_x++;
                     selected_piece = NULL;
                 }
             } else {
