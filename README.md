@@ -1,6 +1,7 @@
-roguelike deckbuilder (since I like those). consists of army skirmishes (opposing army is
-led by a fat lady commander with snippy dialogue) followed by armoury visits (shopkeeper
-also with snippy dialogue)
+roguelike deckbuilder (since I like those). you're a fat lady commander who's leading
+their army into a quarantined zone, skirmishing with alien creatures, and attempting
+to reach the center, the 'abyssal zone' (aka endgame). between skirmishes you visit
+the armoury to buy stuff (has shopkeeper with snippy dialogue)
 
 5x5 grid, on which you and your opponent have **pieces** that have an HP and an ATK value
 
@@ -14,5 +15,7 @@ sudo apt install libsdl2-dev libsdl2-image-dev libgl1-mesa-dev libglew-dev libsd
 ```
 
 army outfit vibe https://x.com/mossyborgar/status/2071605865241547047?s=20
+
+Into The Radius VR has the vibe I like
 
 font https://www.dafont.com/gothica-2.font
